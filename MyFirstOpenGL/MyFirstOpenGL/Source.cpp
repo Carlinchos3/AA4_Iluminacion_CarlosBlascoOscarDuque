@@ -442,11 +442,6 @@ void main() {
 		//Indicar a la tarjeta GPU que programa debe usar
 		glUseProgram(compiledPrograms[0]);
 
-		//Definir la matriz de traslacion, rotacion y escalado
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.f));
-		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.f, 1.f, 0.f));
-		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.f), glm::vec3(1.f));
-
 		// Definir la matriz de vista
 		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -459,12 +454,11 @@ void main() {
 		//Asignar valor variable de textura a usar.
 		glUniform1i(glGetUniformLocation(compiledPrograms[0], "textureSampler"), 0);
 
-		// Pasar las matrices
-		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+		float rotacion = 0;
+
 
 		//Generamos el game loop
 		while (!glfwWindowShouldClose(window)) {
@@ -475,6 +469,28 @@ void main() {
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+			rotacion += 1;
+
+			//Definir la matriz de traslacion, rotacion y escalado
+			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-1.5f, 0.f, -2.0f));
+			glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-rotacion), glm::vec3(0.f, 1.f, 0.f));
+			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.f), glm::vec3(1.f));
+
+			// Pasar las matrices
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
+			//Renderizo objeto 0
+			models[0].Render();
+
+			//Definir la matriz de traslacion, rotacion y escalado
+			glm::mat4 translationMatrix1 = glm::translate(glm::mat4(1.f), glm::vec3(1.5f, 0.f, -2.0f));
+			glm::mat4 rotationMatrix1 = glm::rotate(glm::mat4(1.0f), glm::radians(rotacion), glm::vec3(0.f, 1.f, 0.f));
+			glm::mat4 scaleMatrix1 = glm::scale(glm::mat4(1.f), glm::vec3(1.f));
+
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix1));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix1));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix1));
 			//Renderizo objeto 0
 			models[0].Render();
 
