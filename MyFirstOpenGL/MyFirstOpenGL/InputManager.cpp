@@ -13,7 +13,6 @@ void InputManager::ProcessKeyboard(GLFWwindow* window, float deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         m_camera.MoveRight(-deltaTime);
     
-    //Linterna
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !flashlightPressed) {
         flashlightOn = !flashlightOn;
         flashlightPressed = true;
@@ -48,4 +47,11 @@ void InputManager::MouseCallback(GLFWwindow* window, double posX, double posY) {
 bool InputManager::IsFlashlightOn() const {
     return flashlightOn;
     std::cout << IsFlashlightOn() << std::endl;
+}
+
+void InputManager::PassUniforms(GLuint program) const 
+{
+    glUniform3fv(glGetUniformLocation(program, "flashlightPos"), 1, glm::value_ptr(m_camera.GetPosition()));
+    glUniform3fv(glGetUniformLocation(program, "flashlightDir"), 1, glm::value_ptr(m_camera.GetForward()));
+    glUniform1i(glGetUniformLocation(program, "flashlightOn"), flashlightOn);
 }

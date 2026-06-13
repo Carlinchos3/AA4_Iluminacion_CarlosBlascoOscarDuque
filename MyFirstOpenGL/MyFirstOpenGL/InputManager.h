@@ -15,6 +15,8 @@ public:
 
     bool IsFlashlightOn() const;
 
+    void PassUniforms(GLuint program) const;
+
 private:
     Camera& m_camera;
 

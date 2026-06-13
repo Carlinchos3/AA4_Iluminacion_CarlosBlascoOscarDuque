@@ -45,3 +45,8 @@ void Camera::UpdateVectors() {
     m_right = glm::normalize(glm::cross(m_forward, glm::vec3(0.0f, 1.0f, 0.0f)));
     m_up = glm::normalize(glm::cross(m_right, m_forward));
 }
+
+void Camera::PassUniforms(GLuint program) const 
+{
+    glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_FALSE, glm::value_ptr(GetViewMatrix()));
+}

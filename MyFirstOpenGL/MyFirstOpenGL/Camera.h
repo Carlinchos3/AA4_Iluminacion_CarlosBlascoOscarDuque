@@ -1,4 +1,3 @@
-// Camera.h
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,6 +17,8 @@ public:
     glm::mat4 GetViewMatrix() const;
     glm::vec3 GetPosition() const;
     glm::vec3 GetForward() const;
+
+    void PassUniforms(GLuint program) const;
 
 private:
     void UpdateVectors();
