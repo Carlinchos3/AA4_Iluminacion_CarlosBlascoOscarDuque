@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Permitir modelos OBJ de Assets
+!MyFirstOpenGL/MyFirstOpenGL/Assets/Models/*.obj
