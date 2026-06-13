@@ -18,12 +18,12 @@ public:
     glm::vec3 GetPosition() const;
 
 private:
-    Model*    m_model;
-    Texture*  m_texture;
+    Model* model;
+    Texture* texture;
 
-    glm::vec3 m_position;
-    glm::vec3 m_rotation;
-    glm::vec3 m_scale;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
 
-    bool m_isLightSource;
+    bool isLightSource;
 };

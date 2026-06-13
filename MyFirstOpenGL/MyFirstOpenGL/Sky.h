@@ -10,9 +10,9 @@ public:
     void Update(float currentTime, GLuint program);
 
 private:
-    Satelite* m_sun;
-    Satelite* m_moon;
-    float m_cycleDuration;
+    Satelite* sun;
+    Satelite* moon;
+    float cycleDuration;
 
     glm::vec3 CalcAmbientColor(float angle) const;
 };

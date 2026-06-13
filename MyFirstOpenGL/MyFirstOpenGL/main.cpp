@@ -24,11 +24,11 @@
 #define FLASHLIGHT_OUTER_CONE 45.0f
 #define FLASHLIGHT_MAX_DIST 50.0f
 
-RenderManager* g_renderManager = nullptr;
+RenderManager* renderManager = nullptr;
 
 void Resize_Window(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-    glUniform2f(glGetUniformLocation(g_renderManager->GetProgram(), "windowSize"), (float)width, (float)height);
+    glUniform2f(glGetUniformLocation(renderManager->GetProgram(), "windowSize"), (float)width, (float)height);
 }
 
 Model LoadOBJModel(const std::string& filePath) {
@@ -156,12 +156,12 @@ void main() {
         Sky sky(&sun, &moon, CYCLE_DURATION);
 
         // RenderManager
-        RenderManager renderManager(&shaderManager);
-        g_renderManager = &renderManager;
-        renderManager.AddObject(&trollLeft);
-        renderManager.AddObject(&trollRight);
-        renderManager.AddObject(&sun);
-        renderManager.AddObject(&moon);
+        RenderManager _renderManager(&shaderManager);
+        renderManager = &_renderManager;
+        _renderManager.AddObject(&trollLeft);
+        _renderManager.AddObject(&trollRight);
+        _renderManager.AddObject(&sun);
+        _renderManager.AddObject(&moon);
 
         glfwSetFramebufferSizeCallback(window, Resize_Window);
 
@@ -193,7 +193,7 @@ void main() {
             inputManager.ProcessKeyboard(window, deltaTime);
             inputManager.PassUniforms(program);
 
-            renderManager.Render(camera, sky, inputManager, currentFrame);
+            _renderManager.Render(camera, sky, inputManager, currentFrame);
 
             glFlush();
             glfwSwapBuffers(window);

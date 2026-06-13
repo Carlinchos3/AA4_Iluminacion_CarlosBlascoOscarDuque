@@ -1,31 +1,31 @@
 #include "GameObject.h"
 
-GameObject::GameObject(Model* model, Texture* texture, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, bool isLightSource)
-    : m_model(model), m_texture(texture), m_position(position), m_rotation(rotation), m_scale(scale), m_isLightSource(isLightSource) 
+GameObject::GameObject(Model* _model, Texture* _texture, glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale, bool _isLightSource)
+    : model(_model), texture(_texture), position(_position), rotation(_rotation), scale(_scale), isLightSource(_isLightSource)
 {
 
 }
 
-void GameObject::Render(GLuint program) const 
+void GameObject::Render(GLuint _program) const
 {
-    m_texture->Bind();
+    texture->Bind();
 
-    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), m_position);
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), m_scale);
+    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), position);
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
 
-    glUniformMatrix4fv(glGetUniformLocation(program, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
-    glUniformMatrix4fv(glGetUniformLocation(program, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
-    glUniformMatrix4fv(glGetUniformLocation(program, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
-    glUniform1i(glGetUniformLocation(program, "isLightSource"), m_isLightSource);
+    glUniformMatrix4fv(glGetUniformLocation(_program, "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(_program, "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(_program, "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
+    glUniform1i(glGetUniformLocation(_program, "isLightSource"), isLightSource);
 
-    m_model->Render();
+    model->Render();
 }
 
-void GameObject::SetPosition(const glm::vec3& position) { m_position = position; }
+void GameObject::SetPosition(const glm::vec3& _position) { position = _position; }
 
-void GameObject::SetRotation(const glm::vec3& rotation) { m_rotation = rotation; }
+void GameObject::SetRotation(const glm::vec3& _rotation) { rotation = _rotation; }
 
-void GameObject::SetScale(const glm::vec3& scale) { m_scale = scale; }
+void GameObject::SetScale(const glm::vec3& _scale) { scale = _scale; }
 
-glm::vec3 GameObject::GetPosition() const { return m_position; }
+glm::vec3 GameObject::GetPosition() const { return position; }

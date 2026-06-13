@@ -9,5 +9,5 @@ public:
     glm::vec3 GetDirection() const;
 
 private:
-    float m_orbitRadius;
+    float orbitRadius;
 };

@@ -3,19 +3,19 @@
 #include <gtc/matrix_transform.hpp>
 
 Sky::Sky(Satelite* sun, Satelite* moon, float cycleDuration)
-    : m_sun(sun), m_moon(moon), m_cycleDuration(cycleDuration) { }
+    : sun(sun), moon(moon), cycleDuration(cycleDuration) { }
 
 void Sky::Update(float currentTime, GLuint program) 
 {
-    float angle = (currentTime / m_cycleDuration) * 2.0f * glm::pi<float>();
+    float angle = (currentTime / cycleDuration) * 2.0f * glm::pi<float>();
 
-    m_sun->Update(angle);
-    m_moon->Update(angle + glm::pi<float>());
+    sun->Update(angle);
+    moon->Update(angle + glm::pi<float>());
 
     glm::vec3 ambientColor = CalcAmbientColor(angle);
 
-    glUniform3fv(glGetUniformLocation(program, "sunDir"), 1, glm::value_ptr(m_sun->GetDirection()));
-    glUniform3fv(glGetUniformLocation(program, "moonDir"), 1, glm::value_ptr(m_moon->GetDirection()));
+    glUniform3fv(glGetUniformLocation(program, "sunDir"), 1, glm::value_ptr(sun->GetDirection()));
+    glUniform3fv(glGetUniformLocation(program, "moonDir"), 1, glm::value_ptr(moon->GetDirection()));
     glUniform3fv(glGetUniformLocation(program, "ambientColor"), 1, glm::value_ptr(ambientColor));
 }
 

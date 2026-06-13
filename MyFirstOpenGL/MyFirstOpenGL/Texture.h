@@ -8,5 +8,5 @@ public:
     void Bind() const;
 
 private:
-    GLuint m_textureID;
+    GLuint textureID;
 };

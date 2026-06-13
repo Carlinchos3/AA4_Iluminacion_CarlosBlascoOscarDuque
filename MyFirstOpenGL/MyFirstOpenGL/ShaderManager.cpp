@@ -9,17 +9,17 @@ ShaderManager::ShaderManager(const std::string& vertexPath, const std::string& g
     GLuint vertexShader = LoadVertexShader(vertexPath);
     GLuint geometryShader = LoadGeometryShader(geometryPath);
     GLuint fragmentShader = LoadFragmentShader(fragmentPath);
-    m_program = CreateProgram(vertexShader, geometryShader, fragmentShader);
+    program = CreateProgram(vertexShader, geometryShader, fragmentShader);
 }
 
 void ShaderManager::Use() const 
 {
-    glUseProgram(m_program);
+    glUseProgram(program);
 }
 
 GLuint ShaderManager::GetProgram() const 
 {
-    return m_program;
+    return program;
 }
 
 std::string ShaderManager::LoadFile(const std::string& filePath) const 

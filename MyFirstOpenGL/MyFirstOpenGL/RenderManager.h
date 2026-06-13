@@ -16,6 +16,6 @@ public:
     GLuint GetProgram() const;
 
 private:
-    ShaderManager* m_shaderManager;
-    std::vector<GameObject*> m_gameObjects;
+    ShaderManager* shaderManager;
+    std::vector<GameObject*> gameObjects;
 };

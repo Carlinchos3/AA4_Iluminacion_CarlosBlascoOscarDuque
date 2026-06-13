@@ -1,17 +1,17 @@
 #include "InputManager.h"
 #include <iostream>
 
-InputManager::InputManager(Camera& camera) : m_camera(camera) {}
+InputManager::InputManager(Camera& camera) : camera(camera) {}
 
 void InputManager::ProcessKeyboard(GLFWwindow* window, float deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        m_camera.MoveForward(deltaTime);
+        camera.MoveForward(deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        m_camera.MoveForward(-deltaTime);
+        camera.MoveForward(-deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        m_camera.MoveRight(deltaTime);
+        camera.MoveRight(deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        m_camera.MoveRight(-deltaTime);
+        camera.MoveRight(-deltaTime);
     
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !flashlightPressed) {
         flashlightOn = !flashlightOn;
@@ -22,24 +22,24 @@ void InputManager::ProcessKeyboard(GLFWwindow* window, float deltaTime) {
 }
 
 void InputManager::ProcessMouse(float offsetX, float offsetY) {
-    m_camera.Rotate(offsetX, offsetY);
+    camera.Rotate(offsetX, offsetY);
 }
 
 void InputManager::MouseCallback(GLFWwindow* window, double posX, double posY) {
     InputManager* manager = static_cast<InputManager*>(glfwGetWindowUserPointer(window));
     if (!manager) return;
 
-    if (manager->Is_firstMouse) {
-        manager->s_lastX = (float)posX;
-        manager->s_lastY = (float)posY;
-        manager->Is_firstMouse = false;
+    if (manager->isFirstMouse) {
+        manager->lastX = (float)posX;
+        manager->lastY = (float)posY;
+        manager->isFirstMouse = false;
     }
 
-    float offsetX = (float)posX - manager->s_lastX;
-    float offsetY = (float)posY - manager->s_lastY;
+    float offsetX = (float)posX - manager->lastX;
+    float offsetY = (float)posY - manager->lastY;
 
-    manager->s_lastX = (float)posX;
-    manager->s_lastY = (float)posY;
+    manager->lastX = (float)posX;
+    manager->lastY = (float)posY;
 
     manager->ProcessMouse(offsetX, offsetY);
 }
@@ -51,7 +51,7 @@ bool InputManager::IsFlashlightOn() const {
 
 void InputManager::PassUniforms(GLuint program) const 
 {
-    glUniform3fv(glGetUniformLocation(program, "flashlightPos"), 1, glm::value_ptr(m_camera.GetPosition()));
-    glUniform3fv(glGetUniformLocation(program, "flashlightDir"), 1, glm::value_ptr(m_camera.GetForward()));
+    glUniform3fv(glGetUniformLocation(program, "flashlightPos"), 1, glm::value_ptr(camera.GetPosition()));
+    glUniform3fv(glGetUniformLocation(program, "flashlightDir"), 1, glm::value_ptr(camera.GetForward()));
     glUniform1i(glGetUniformLocation(program, "flashlightOn"), flashlightOn);
 }

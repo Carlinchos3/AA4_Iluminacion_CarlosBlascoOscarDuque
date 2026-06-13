@@ -8,29 +8,29 @@
 class Camera 
 {
 public:
-    Camera(glm::vec3 position, float yaw, float pitch);
+    Camera(glm::vec3 _position, float _yaw, float _pitch);
 
-    void MoveForward(float deltaTime);
-    void MoveRight(float deltaTime);
-    void Rotate(float offsetX, float offsetY);
+    void MoveForward(float _deltaTime);
+    void MoveRight(float _deltaTime);
+    void Rotate(float _offsetX, float _offsetY);
 
     glm::mat4 GetViewMatrix() const;
     glm::vec3 GetPosition() const;
     glm::vec3 GetForward() const;
 
-    void PassUniforms(GLuint program) const;
+    void PassUniforms(GLuint _program) const;
 
 private:
     void UpdateVectors();
 
-    glm::vec3 m_position;
-    glm::vec3 m_forward;
-    glm::vec3 m_right;
-    glm::vec3 m_up;
+    glm::vec3 position;
+    glm::vec3 forward;
+    glm::vec3 right;
+    glm::vec3 up;
 
-    float m_yaw;
-    float m_pitch;
-    float m_speed = 5.0f;
-    float m_sensitivity = 0.1f;
+    float yaw;
+    float pitch;
+    float speed = 5.0f;
+    float sensitivity = 0.1f;
 };
 

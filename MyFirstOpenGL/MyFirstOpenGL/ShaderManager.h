@@ -10,7 +10,7 @@ public:
     GLuint GetProgram() const;
 
 private:
-    GLuint m_program;
+    GLuint program;
 
     std::string LoadFile(const std::string& filePath) const;
     GLuint LoadVertexShader(const std::string& filePath) const;
