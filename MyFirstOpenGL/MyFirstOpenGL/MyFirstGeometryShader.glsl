@@ -10,6 +10,9 @@ out vec2 uvsFragmentShader;
 out vec3 normalsFragmentShader;
 out vec4 primitivePosition;
 
+in vec4 worldPosition4GeometryShader[];
+out vec4 worldPosition4FragmentShader;
+
 uniform mat4 translationMatrix;
 uniform mat4 rotationMatrix;
 uniform mat4 scaleMatrix;
@@ -24,6 +27,8 @@ void main(){
 	for(int i = 0; i < gl_in.length(); i++){
 
 		gl_Position = projection * view * model * gl_in[i].gl_Position;
+
+		worldPosition4FragmentShader = translationMatrix * rotationMatrix * scaleMatrix * worldPosition4GeometryShader[i];
 
 		uvsFragmentShader = uvsGeometryShader[i];
 		normalsFragmentShader = mat3(rotationMatrix) * normalsGeometryShader[i];

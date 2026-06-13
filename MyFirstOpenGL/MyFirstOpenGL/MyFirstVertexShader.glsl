@@ -6,11 +6,14 @@ layout(location = 2) in vec3 normalsVertexShader;
 
 out vec2 uvsGeometryShader;
 out vec3 normalsGeometryShader;
+out vec4 worldPosition4GeometryShader;
 
 void main() {
 
     uvsGeometryShader = uvsVertexShader;
     normalsGeometryShader = normalsVertexShader;
+
+    worldPosition4GeometryShader = vec4(posicion, 1.0);
 
     gl_Position = vec4(posicion, 1.0);
 

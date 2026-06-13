@@ -10,9 +10,12 @@
 #include <sstream>
 #include <stb_image.h>
 #include "Model.h"
+#include "Camera.h"
+#include "InputManager.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
+#define CYCLE_DURATION 20.f
 
 struct ShaderProgram {
 	GLuint vertexShader = 0;
@@ -29,7 +32,6 @@ void Resize_Window(GLFWwindow* window, int iFrameBufferWidth, int iFrameBufferHe
 	glViewport(0, 0, iFrameBufferWidth, iFrameBufferHeight);
 	glUniform2f(glGetUniformLocation(compiledPrograms[0], "windowSize"), iFrameBufferWidth, iFrameBufferHeight);
 }
-
 //Funcion que leera un .obj y devolvera un modelo para poder ser renderizado
 Model LoadOBJModel(const std::string& filePath) {
 
@@ -142,8 +144,6 @@ Model LoadOBJModel(const std::string& filePath) {
 	}
 	return Model(vertexs, textureCoordinates, vertexNormal);
 }
-
-
 //Funcion que devolvera una string con todo el archivo leido
 std::string Load_File(const std::string& filePath) {
 
@@ -168,7 +168,6 @@ std::string Load_File(const std::string& filePath) {
 
 	return fileContent;
 }
-
 GLuint LoadFragmentShader(const std::string& filePath) {
 
 	// Crear un fragment shader
@@ -209,8 +208,6 @@ GLuint LoadFragmentShader(const std::string& filePath) {
 		std::exit(EXIT_FAILURE);
 	}
 }
-
-
 GLuint LoadGeometryShader(const std::string& filePath) {
 
 	// Crear un vertex shader
@@ -251,7 +248,6 @@ GLuint LoadGeometryShader(const std::string& filePath) {
 		std::exit(EXIT_FAILURE);
 	}
 }
-
 GLuint LoadVertexShader(const std::string& filePath) {
 
 	// Crear un vertex shader
@@ -292,7 +288,6 @@ GLuint LoadVertexShader(const std::string& filePath) {
 		std::exit(EXIT_FAILURE);
 	}
 }
-
 //Función que dado un struct que contiene los shaders de un programa generara el programa entero de la GPU
 GLuint CreateProgram(const ShaderProgram& shaders) {
 
@@ -393,8 +388,26 @@ void main() {
 	int width, height, nrChannels;
 	unsigned char* textureInfo = stbi_load("Assets/Textures/troll.png", &width, &height, &nrChannels, 0);
 
+	//texturas de sol y luna
+	// Textura sol
+	int widthSun, heightSun, nrChannelsSun;
+	unsigned char* sunTextureInfo = stbi_load("Assets/Textures/sun.png", &widthSun, &heightSun, &nrChannelsSun, 0);
+
+	// Textura luna
+	int widthMoon, heightMoon, nrChannelsMoon;
+	unsigned char* moonTextureInfo = stbi_load("Assets/Textures/moon.png", &widthMoon, &heightMoon, &nrChannelsMoon, 0);
+
 	//Inicializamos GLEW y controlamos errores
 	if (glewInit() == GLEW_OK) {
+
+		//Camara e Input
+		Camera camera(glm::vec3(0.0f, 1.0f, 5.0f), -90.0f, 0.0f);
+		InputManager inputManager(camera);
+
+		glfwSetWindowUserPointer(window, &inputManager);
+		glfwSetCursorPosCallback(window, InputManager::MouseCallback);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		float lastFrame = 0.0f;
 
 		//Compilar shaders
 		ShaderProgram myFirstProgram;
@@ -404,6 +417,8 @@ void main() {
 
 		//Cargo Modelo
 		models.push_back(LoadOBJModel("Assets/Models/troll.obj"));
+		models.push_back(LoadOBJModel("Assets/Models/sphere.obj"));
+		models.push_back(LoadOBJModel("Assets/Models/sphere.obj"));
 
 		//Compìlar programa
 		compiledPrograms.push_back(CreateProgram(myFirstProgram));
@@ -433,6 +448,30 @@ void main() {
 		//Liberar memoria de la imagen cargada
 		stbi_image_free(textureInfo);
 
+		//Textura sol
+		GLuint sunTextureID;
+		glGenTextures(1, &sunTextureID);
+		glBindTexture(GL_TEXTURE_2D, sunTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthSun, heightSun, 0, GL_RGB, GL_UNSIGNED_BYTE, sunTextureInfo);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(sunTextureInfo);
+
+		//Textura luna
+		GLuint moonTextureID;
+		glGenTextures(1, &moonTextureID);
+		glBindTexture(GL_TEXTURE_2D, moonTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthMoon, heightMoon, 0, GL_RGB, GL_UNSIGNED_BYTE, moonTextureInfo);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(moonTextureInfo);
+
 		//Definimos color para limpiar el buffer de color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
@@ -454,45 +493,97 @@ void main() {
 		//Asignar valor variable de textura a usar.
 		glUniform1i(glGetUniformLocation(compiledPrograms[0], "textureSampler"), 0);
 
-		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 		float rotacion = 0;
-
 
 		//Generamos el game loop
 		while (!glfwWindowShouldClose(window)) {
 
 			//Pulleamos los eventos (botones, teclas, mouse...)
 			glfwPollEvents();
-			
+
 			//Limpiamos los buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+			//Delta time
+			float currentFrame = (float)glfwGetTime();
+			float deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+			inputManager.ProcessKeyboard(window, deltaTime);
+
+			//Ciclo de dia y noche
+			float angle = (currentFrame / CYCLE_DURATION) * 2.0f * glm::pi<float>();
+
+			glm::vec3 sunDir = glm::normalize(glm::vec3(cos(angle), sin(angle), 0.0f));
+			glm::vec3 moonDir = -sunDir;
+
+			float dayFactor = glm::clamp(sin(angle), 0.0f, 1.0f);
+			glm::vec3 nightColor = glm::vec3(0.05f, 0.05f, 0.2f);
+			glm::vec3 dayColor = glm::vec3(1.0f, 0.95f, 0.7f);
+			glm::vec3 ambientColor = glm::mix(nightColor, dayColor, dayFactor);
+
+			glUniform3fv(glGetUniformLocation(compiledPrograms[0], "sunDir"), 1, glm::value_ptr(sunDir));
+			glUniform3fv(glGetUniformLocation(compiledPrograms[0], "moonDir"), 1, glm::value_ptr(moonDir));
+			glUniform3fv(glGetUniformLocation(compiledPrograms[0], "ambientColor"), 1, glm::value_ptr(ambientColor));
+
+			glUniform3fv(glGetUniformLocation(compiledPrograms[0], "flashlightPos"), 1, glm::value_ptr(camera.GetPosition()));
+			glUniform3fv(glGetUniformLocation(compiledPrograms[0], "flashlightDir"), 1, glm::value_ptr(camera.GetForward()));
+			glUniform1i(glGetUniformLocation(compiledPrograms[0], "flashlightOn"), inputManager.IsFlashlightOn());
+			glUniform1f(glGetUniformLocation(compiledPrograms[0], "flashlightInnerCone"), glm::cos(glm::radians(30.0f)));
+			glUniform1f(glGetUniformLocation(compiledPrograms[0], "flashlightOuterCone"), glm::cos(glm::radians(45.0f)));
+			glUniform1f(glGetUniformLocation(compiledPrograms[0], "flashlightMaxDist"), 50.0f);
+
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
+
 			rotacion += 1;
 
-			//Definir la matriz de traslacion, rotacion y escalado
+			// Troll izquierda
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureID);
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-1.5f, 0.f, -2.0f));
 			glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-rotacion), glm::vec3(0.f, 1.f, 0.f));
 			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.f), glm::vec3(1.f));
-
-			// Pasar las matrices
 			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix));
 			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix));
 			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix));
-			//Renderizo objeto 0
+			glUniform1i(glGetUniformLocation(compiledPrograms[0], "isLightSource"), false);
 			models[0].Render();
 
-			//Definir la matriz de traslacion, rotacion y escalado
+			// Troll derecha
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureID);
 			glm::mat4 translationMatrix1 = glm::translate(glm::mat4(1.f), glm::vec3(1.5f, 0.f, -2.0f));
 			glm::mat4 rotationMatrix1 = glm::rotate(glm::mat4(1.0f), glm::radians(rotacion), glm::vec3(0.f, 1.f, 0.f));
 			glm::mat4 scaleMatrix1 = glm::scale(glm::mat4(1.f), glm::vec3(1.f));
-
 			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix1));
 			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(rotationMatrix1));
 			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(scaleMatrix1));
-			//Renderizo objeto 0
+			glUniform1i(glGetUniformLocation(compiledPrograms[0], "isLightSource"), false);
 			models[0].Render();
+
+			// Sol
+			const float ORBIT_RADIUS = 15.0f;
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, sunTextureID);
+			glm::mat4 sunTranslation = glm::translate(glm::mat4(1.0f), sunDir * ORBIT_RADIUS);
+			glm::mat4 sunScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(sunTranslation));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(sunScale));
+			glUniform1i(glGetUniformLocation(compiledPrograms[0], "isLightSource"), true);
+			models[1].Render();
+
+			// Luna
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, moonTextureID);
+			glm::mat4 moonTranslation = glm::translate(glm::mat4(1.0f), moonDir * ORBIT_RADIUS);
+			glm::mat4 moonScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "translationMatrix"), 1, GL_FALSE, glm::value_ptr(moonTranslation));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "rotationMatrix"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+			glUniformMatrix4fv(glGetUniformLocation(compiledPrograms[0], "scaleMatrix"), 1, GL_FALSE, glm::value_ptr(moonScale));
+			glUniform1i(glGetUniformLocation(compiledPrograms[0], "isLightSource"), true);
+			models[2].Render();
 
 			//Cambiamos buffers
 			glFlush();
