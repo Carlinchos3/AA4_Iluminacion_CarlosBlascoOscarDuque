@@ -135,20 +135,31 @@ void main() {
         Model trollModel = LoadOBJModel("Assets/Models/troll.obj");
         Model sphereModel = LoadOBJModel("Assets/Models/sphere.obj");
         Model rockModel = LoadOBJModel("Assets/Models/rock.obj");
-        Model skullModel = LoadOBJModel("Assets/Models/skull.obj");
+        Model SemaforoModel = LoadOBJModel("Assets/Models/Semaforo.obj");
+        Model TercerEdificioModel = LoadOBJModel("Assets/Models/TercerEdificio.obj");
+        Model VallaModel = LoadOBJModel("Assets/Models/Valla.obj");
+        Model SeñalModel = LoadOBJModel("Assets/Models/Señal.obj");
 
         // Texturas
         Texture trollTexture("Assets/Textures/troll.png");
         Texture sunTexture("Assets/Textures/sun.png");
         Texture moonTexture("Assets/Textures/moon.png");
         Texture rockTexture("Assets/Textures/rock.png");
-        Texture skullTexture("Assets/Textures/skull.png");
+        Texture bolaTexture("Assets/Textures/bola.png");
+        Texture SemaforoTexture("Assets/Textures/Semaforo.png");
+        Texture TercerEdificioTexture("Assets/Textures/TercerEdificio.png");
+        Texture VallaTexture("Assets/Textures/Valla.png");
+        Texture señalTexture("Assets/Textures/señal.png");
 
         // GameObjects
         GameObject trollLeft(&trollModel, &trollTexture, glm::vec3(-1.5f, 0.0f, -2.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         GameObject trollRight(&trollModel, &trollTexture, glm::vec3(1.5f, 0.0f, -2.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         GameObject rock(&rockModel, &rockTexture, glm::vec3(-1.f, 0.0f, -0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
-        GameObject skull(&skullModel, &skullTexture, glm::vec3(1.5f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.01f));
+        GameObject bola(&sphereModel, &bolaTexture, glm::vec3(0.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(1.f));
+        GameObject Semaforo(&SemaforoModel, &SemaforoTexture, glm::vec3(1.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.2f));
+        GameObject TercerEdificio(&TercerEdificioModel, &TercerEdificioTexture, glm::vec3(16.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.04f));
+        GameObject Valla(&VallaModel, &VallaTexture, glm::vec3(8.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.25f));
+        GameObject Señal(&SeñalModel, &señalTexture, glm::vec3(5.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.04f));
 
         // Astros
         Satelite sun(&sphereModel, &sunTexture, ORBIT_RADIUS, glm::vec3(0.5f));
@@ -162,10 +173,14 @@ void main() {
         renderManager = &_renderManager;
         _renderManager.AddObject(&trollLeft);
         _renderManager.AddObject(&trollRight);
-        _renderManager.AddObject(&sun);
         _renderManager.AddObject(&rock);
-        _renderManager.AddObject(&skull);
+        _renderManager.AddObject(&bola);
+        _renderManager.AddObject(&Semaforo);
+        _renderManager.AddObject(&TercerEdificio);
+        _renderManager.AddObject(&Valla);
+        _renderManager.AddObject(&Señal);
         _renderManager.AddObject(&moon);
+        _renderManager.AddObject(&sun);
 
         glfwSetFramebufferSizeCallback(window, Resize_Window);
 
