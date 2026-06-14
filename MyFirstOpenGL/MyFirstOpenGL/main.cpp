@@ -20,8 +20,8 @@
 #define WINDOW_HEIGHT 480
 #define CYCLE_DURATION 20.0f
 #define ORBIT_RADIUS 15.0f
-#define FLASHLIGHT_INNER_CONE 30.0f
-#define FLASHLIGHT_OUTER_CONE 45.0f
+#define FLASHLIGHT_INNER_CONE glm::cos(glm::radians(15.f))
+#define FLASHLIGHT_OUTER_CONE glm::cos(glm::radians(25.f))
 #define FLASHLIGHT_MAX_DIST 50.0f
 
 RenderManager* renderManager = nullptr;
@@ -118,14 +118,10 @@ void main() {
     glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
 
-    if (glewInit() == GLEW_OK) {
-
+    if (glewInit() == GLEW_OK) 
+    {
         // Shaders
-        ShaderManager shaderManager(
-            "MyFirstVertexShader.glsl",
-            "MyFirstGeometryShader.glsl",
-            "MyFirstFragmentShader.glsl"
-        );
+        ShaderManager shaderManager("MyFirstVertexShader.glsl", "MyFirstGeometryShader.glsl", "MyFirstFragmentShader.glsl");
         shaderManager.Use();
 
         // Camara e input
@@ -191,7 +187,7 @@ void main() {
             lastFrame = currentFrame;
 
             inputManager.ProcessKeyboard(window, deltaTime);
-            inputManager.PassUniforms(program);
+            //inputManager.PassUniforms(program);
 
             _renderManager.Render(camera, sky, inputManager, currentFrame);
 

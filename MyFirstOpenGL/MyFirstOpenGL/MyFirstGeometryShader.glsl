@@ -31,7 +31,10 @@ void main(){
 		worldPosition4FragmentShader = translationMatrix * rotationMatrix * scaleMatrix * worldPosition4GeometryShader[i];
 
 		uvsFragmentShader = uvsGeometryShader[i];
-		normalsFragmentShader = mat3(rotationMatrix) * normalsGeometryShader[i];
+
+		//Calculo luces (PROVISIONAL)
+		mat3 normalMatrix = transpose(inverse(mat3(model)));
+		normalsFragmentShader = normalize(normalMatrix * normalsGeometryShader[i]);
 
 		EmitVertex();
 	}

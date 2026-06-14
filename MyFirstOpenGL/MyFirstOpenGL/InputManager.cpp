@@ -53,5 +53,5 @@ void InputManager::PassUniforms(GLuint program) const
 {
     glUniform3fv(glGetUniformLocation(program, "flashlightPos"), 1, glm::value_ptr(camera.GetPosition()));
     glUniform3fv(glGetUniformLocation(program, "flashlightDir"), 1, glm::value_ptr(camera.GetForward()));
-    glUniform1i(glGetUniformLocation(program, "flashlightOn"), flashlightOn);
+    glUniform1i(glGetUniformLocation(program, "flashlightOn"), flashlightOn ? 1 : 0);
 }
