@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+ï»¿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 #include <gtc/type_ptr.hpp>
@@ -16,19 +16,44 @@
 #include <fstream>
 #include <sstream>
 
+//Ventana
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
+
+//Ciclo del sol y la luna
 #define CYCLE_DURATION 20.0f
 #define ORBIT_RADIUS 15.0f
+
+//Linterna
 #define FLASHLIGHT_INNER_CONE glm::cos(glm::radians(15.f))
 #define FLASHLIGHT_OUTER_CONE glm::cos(glm::radians(25.f))
 #define FLASHLIGHT_MAX_DIST 10.0f
+
+//Spawnpoints
+#define SPAWNPOINTS 6
+#define SPAWN_TYPE_COUNT        5
+#define SPAWN_TYPE_TROLL        0
+#define SPAWN_TYPE_SEMAFORO     1
+#define SPAWN_TYPE_VALLA        2
+#define SPAWN_TYPE_SENAL        3
+#define SPAWN_TYPE_BOLA         4
+#define TROLL_SCALE_BASE        0.8f
+#define SEMAFORO_SCALE_BASE     0.05f
+#define VALLA_SCALE_BASE        0.15f
+#define SENAL_SCALE_BASE        0.02f
+#define BOLA_SCALE_BASE         0.55f
+#define SCALE_VARIANCE          0.6f
 
 RenderManager* renderManager = nullptr;
 
 void Resize_Window(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     glUniform2f(glGetUniformLocation(renderManager->GetProgram(), "windowSize"), (float)width, (float)height);
+}
+
+float RandomFloat(float minVal, float maxVal)
+{
+    return minVal + static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * (maxVal - minVal);
 }
 
 Model LoadOBJModel(const std::string& filePath) {
@@ -135,10 +160,10 @@ void main() {
         Model trollModel = LoadOBJModel("Assets/Models/troll.obj");
         Model sphereModel = LoadOBJModel("Assets/Models/sphere.obj");
         Model rockModel = LoadOBJModel("Assets/Models/rock.obj");
-        Model SemaforoModel = LoadOBJModel("Assets/Models/Semaforo.obj");
-        Model TercerEdificioModel = LoadOBJModel("Assets/Models/TercerEdificio.obj");
-        Model VallaModel = LoadOBJModel("Assets/Models/Valla.obj");
-        Model SeñalModel = LoadOBJModel("Assets/Models/Señal.obj");
+        Model semaforoModel = LoadOBJModel("Assets/Models/Semaforo.obj");
+        Model tercerEdificioModel = LoadOBJModel("Assets/Models/TercerEdificio.obj");
+        Model vallaModel = LoadOBJModel("Assets/Models/Valla.obj");
+        Model seÃ±alModel = LoadOBJModel("Assets/Models/SeÃ±al.obj");
 
         // Texturas
         Texture trollTexture("Assets/Textures/troll.png");
@@ -146,20 +171,10 @@ void main() {
         Texture moonTexture("Assets/Textures/moon.png");
         Texture rockTexture("Assets/Textures/rock.png");
         Texture bolaTexture("Assets/Textures/bola.png");
-        Texture SemaforoTexture("Assets/Textures/Semaforo.png");
-        Texture TercerEdificioTexture("Assets/Textures/TercerEdificio.png");
-        Texture VallaTexture("Assets/Textures/Valla.png");
-        Texture señalTexture("Assets/Textures/señal.png");
-
-        // GameObjects
-        GameObject trollLeft(&trollModel, &trollTexture, glm::vec3(-1.5f, 0.0f, -2.0f), glm::vec3(0.0f), glm::vec3(1.0f));
-        GameObject trollRight(&trollModel, &trollTexture, glm::vec3(1.5f, 0.0f, -2.0f), glm::vec3(0.0f), glm::vec3(1.0f));
-        GameObject rock(&rockModel, &rockTexture, glm::vec3(-1.f, 0.0f, -0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
-        GameObject bola(&sphereModel, &bolaTexture, glm::vec3(0.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(1.f));
-        GameObject Semaforo(&SemaforoModel, &SemaforoTexture, glm::vec3(1.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.2f));
-        GameObject TercerEdificio(&TercerEdificioModel, &TercerEdificioTexture, glm::vec3(16.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.04f));
-        GameObject Valla(&VallaModel, &VallaTexture, glm::vec3(8.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.25f));
-        GameObject Señal(&SeñalModel, &señalTexture, glm::vec3(5.f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.04f));
+        Texture semaforoTexture("Assets/Textures/Semaforo.png");
+        Texture tercerEdificioTexture("Assets/Textures/TercerEdificio.png");
+        Texture vallaTexture("Assets/Textures/Valla.png");
+        Texture seÃ±alTexture("Assets/Textures/seÃ±al.png");
 
         // Astros
         Satelite sun(&sphereModel, &sunTexture, ORBIT_RADIUS, glm::vec3(0.5f));
@@ -171,16 +186,85 @@ void main() {
         // RenderManager
         RenderManager _renderManager(&shaderManager);
         renderManager = &_renderManager;
-        _renderManager.AddObject(&trollLeft);
-        _renderManager.AddObject(&trollRight);
-        _renderManager.AddObject(&rock);
-        _renderManager.AddObject(&bola);
-        _renderManager.AddObject(&Semaforo);
-        _renderManager.AddObject(&TercerEdificio);
-        _renderManager.AddObject(&Valla);
-        _renderManager.AddObject(&Señal);
         _renderManager.AddObject(&moon);
         _renderManager.AddObject(&sun);
+
+        //Objeto fijos, el mismo edificio 3 veces para hacer como un contorno
+
+        GameObject tercerEdificio(&tercerEdificioModel, &tercerEdificioTexture, glm::vec3(-10.0f, 0.0f, -8.0f), glm::vec3(180.0f), glm::vec3(0.08f));
+        _renderManager.AddObject(&tercerEdificio);
+
+        GameObject tercerEdificio1(&tercerEdificioModel, &tercerEdificioTexture, glm::vec3(10.0f, 0.0f, -8.0f), glm::vec3(0.0f),glm::vec3(0.08f));
+        _renderManager.AddObject(&tercerEdificio1);
+
+        GameObject tercerEdificio2(&tercerEdificioModel, &tercerEdificioTexture, glm::vec3(0.0f, 0.0f, -18.0f), glm::vec3(90.0f), glm::vec3(0.08f));
+        _renderManager.AddObject(&tercerEdificio2);
+
+        //Sistema de spawnpoints
+        // 6 posiciones distribuidas en la acera de la escena urbana
+
+        const glm::vec3 spawnPoints[SPAWNPOINTS] =
+        {
+            glm::vec3(-4.0f, 0.0f,  -8.0f),
+            glm::vec3(-1.5f, 0.0f,  -5.0f),
+            glm::vec3(1.0f, 0.0f,  -2.0f),
+            glm::vec3(3.5f, 0.0f,  -5.0f),
+            glm::vec3(3.0f, 0.0f,  -10.0f),
+            glm::vec3(0.5f, 0.0f,  -10.0f)
+        };
+
+        // Vector que mantiene vivos todos los GameObjects generados en los spawnpoints
+
+        std::vector<GameObject> spawnedObjects; 
+        spawnedObjects.reserve(SPAWNPOINTS * 2);
+
+        for (int i = 0; i < SPAWNPOINTS; i++)
+        {
+            // Elegir aleatoriamente quÃ© conjunto aparece en este spawnpoint
+            int spawnType = rand() % SPAWN_TYPE_COUNT;
+
+            // RotaciÃ³n Y aleatoria para que no todos miren en la misma direcciÃ³n
+            float randomRotY = RandomFloat(0.0f, 360.0f);
+
+            const glm::vec3& pos = spawnPoints[i];
+
+            //spawneamos los objetos
+            if (spawnType == SPAWN_TYPE_TROLL)
+            {
+                float trollScale = TROLL_SCALE_BASE * (1.0f + RandomFloat(0.0f, SCALE_VARIANCE));
+
+                spawnedObjects.emplace_back(&trollModel, &trollTexture, pos, glm::vec3(0.0f, randomRotY, 0.0f), glm::vec3(trollScale));
+                _renderManager.AddObject(&spawnedObjects.back());
+            }
+            else if (spawnType == SPAWN_TYPE_SEMAFORO)
+            {
+                float scale = SEMAFORO_SCALE_BASE * (1.0f + RandomFloat(0.0f, SCALE_VARIANCE));
+
+                spawnedObjects.emplace_back(&semaforoModel, &semaforoTexture, pos, glm::vec3(0.0f, randomRotY, 0.0f), glm::vec3(scale));
+                _renderManager.AddObject(&spawnedObjects.back());
+            }
+            else if (spawnType == SPAWN_TYPE_VALLA)
+            {
+                float scale = VALLA_SCALE_BASE * (1.0f + RandomFloat(0.0f, SCALE_VARIANCE));
+
+                spawnedObjects.emplace_back(&vallaModel, &vallaTexture, pos, glm::vec3(0.0f, randomRotY, 0.0f), glm::vec3(scale));
+                _renderManager.AddObject(&spawnedObjects.back());
+            }
+            else if (spawnType == SPAWN_TYPE_BOLA)
+            {
+                float bolaScale = BOLA_SCALE_BASE * (1.0f + RandomFloat(0.0f, SCALE_VARIANCE));
+
+                spawnedObjects.emplace_back(&sphereModel, &bolaTexture, glm::vec3(pos.x, pos.y, pos.z), glm::vec3(0.0f), glm::vec3(bolaScale * 0.5f));
+                _renderManager.AddObject(&spawnedObjects.back());
+            }
+            else //la seÃ±al
+            {
+                float scale = SENAL_SCALE_BASE * (1.0f + RandomFloat(0.0f, SCALE_VARIANCE));
+
+                spawnedObjects.emplace_back(&seÃ±alModel,&seÃ±alTexture, pos,glm::vec3(0.0f, randomRotY, 0.0f), glm::vec3(scale));
+                _renderManager.AddObject(&spawnedObjects.back());
+            }
+        }
 
         glfwSetFramebufferSizeCallback(window, Resize_Window);
 
