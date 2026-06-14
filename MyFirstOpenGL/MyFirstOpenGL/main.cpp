@@ -22,7 +22,7 @@
 #define ORBIT_RADIUS 15.0f
 #define FLASHLIGHT_INNER_CONE glm::cos(glm::radians(15.f))
 #define FLASHLIGHT_OUTER_CONE glm::cos(glm::radians(25.f))
-#define FLASHLIGHT_MAX_DIST 50.0f
+#define FLASHLIGHT_MAX_DIST 10.0f
 
 RenderManager* renderManager = nullptr;
 
@@ -171,12 +171,12 @@ void main() {
 
         // Uniforms fijos
         GLuint program = shaderManager.GetProgram();
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, camera.GetFar(), camera.GetNear());
         glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniform2f(glGetUniformLocation(program, "windowSize"), WINDOW_WIDTH, WINDOW_HEIGHT);
         glUniform1i(glGetUniformLocation(program, "textureSampler"), 0);
-        glUniform1f(glGetUniformLocation(program, "flashlightInnerCone"), glm::cos(glm::radians(FLASHLIGHT_INNER_CONE)));
-        glUniform1f(glGetUniformLocation(program, "flashlightOuterCone"), glm::cos(glm::radians(FLASHLIGHT_OUTER_CONE)));
+        glUniform1f(glGetUniformLocation(program, "flashlightInnerCone"), FLASHLIGHT_INNER_CONE);
+        glUniform1f(glGetUniformLocation(program, "flashlightOuterCone"), FLASHLIGHT_OUTER_CONE);
         glUniform1f(glGetUniformLocation(program, "flashlightMaxDist"), FLASHLIGHT_MAX_DIST);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -185,7 +185,8 @@ void main() {
         float lastFrame = 0.0f;
 
         // Game loop
-        while (!glfwWindowShouldClose(window)) {
+        while (!glfwWindowShouldClose(window)) 
+        {
 
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -195,8 +196,6 @@ void main() {
             lastFrame = currentFrame;
 
             inputManager.ProcessKeyboard(window, deltaTime);
-            //inputManager.PassUniforms(program);
-
             _renderManager.Render(camera, sky, inputManager, currentFrame);
 
             glFlush();

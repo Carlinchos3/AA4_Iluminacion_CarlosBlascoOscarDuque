@@ -20,6 +20,10 @@ public:
 
     void PassUniforms(GLuint _program) const;
 
+    float GetFov() { return fFov; }
+    float GetFar() { return fFar; }
+    float GetNear() { return fNear; }
+
 private:
     void UpdateVectors();
 
@@ -32,5 +36,10 @@ private:
     float pitch;
     float speed = 5.0f;
     float sensitivity = 0.1f;
+    float yawLimit = 89.0f;
+
+    float fFov = 45.f;
+    float fFar = 0.1f;
+    float fNear = 100.f;
 };
 

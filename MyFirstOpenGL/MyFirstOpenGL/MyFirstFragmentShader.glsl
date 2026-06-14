@@ -37,22 +37,22 @@ void main()
 
     vec3 baseColor = texture(textureSampler, adjustedTexCoord).rgb;
 
-    // Ambient: transiciona de azul oscuro (noche) a amarillento (dia)
+    // Ambient con transición
     vec3 result = ambientColor * baseColor;
 
-    // Sol: fade suave en el horizonte para evitar cortes bruscos
+    // Sol con un fade porque sino mete cortes burscos
     float sunDot = dot(normalsFragmentShader, normalize(sunDir));
     float sunHorizonFade = smoothstep(-0.2, 0.2, sunDir.y);
     float sunDiffuse = max(sunDot, 0.15);
     result += baseColor * sunDiffuse * sunHorizonFade;
 
-    // Luna: misma logica pero con intensidad reducida (es luz reflejada)
+    // Luna igual que el sol pero menos intensa
     float moonDot = dot(normalsFragmentShader, normalize(-moonDir));
     float moonHorizonFade = smoothstep(-0.2, 0.2, moonDir.y);
     float moonDiffuse = max(moonDot, 0.15) * 0.3;
     result += baseColor * moonDiffuse * moonHorizonFade;
 
-    // Linterna: spotlight con inner/outer cone y atenuacion por distancia
+    // Linterna
     if (flashlightOn) 
     {
         vec3 toFragment = worldPosition4FragmentShader.xyz - flashlightPos;
@@ -62,8 +62,8 @@ void main()
             vec3 toFragDir = normalize(toFragment);
             float angle = dot(toFragDir, normalize(flashlightDir));
             float intensity = smoothstep(flashlightOuterCone, flashlightInnerCone, angle);
-            float attenuation = 1.0 - pow(dist / flashlightMaxDist, 2.0); // cuadratica, cae menos fuerte al inicio
-            result += baseColor * intensity * attenuation * 3.0; // boost de intensidad
+            float attenuation = 1.0 - pow(dist / flashlightMaxDist, 2.0);
+            result += baseColor * intensity * attenuation * 3.0;
         }
     }
 

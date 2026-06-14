@@ -24,7 +24,8 @@ void main(){
     mat4 model = translationMatrix * rotationMatrix * scaleMatrix;
 	primitivePosition = model * ((gl_in[0].gl_Position + gl_in[1].gl_Position + gl_in[2].gl_Position) * 0.33);
 
-	for(int i = 0; i < gl_in.length(); i++){
+	for(int i = 0; i < gl_in.length(); i++)
+	{
 
 		gl_Position = projection * view * model * gl_in[i].gl_Position;
 
@@ -32,7 +33,6 @@ void main(){
 
 		uvsFragmentShader = uvsGeometryShader[i];
 
-		//Calculo luces (PROVISIONAL)
 		mat3 normalMatrix = transpose(inverse(mat3(model)));
 		normalsFragmentShader = normalize(normalMatrix * normalsGeometryShader[i]);
 

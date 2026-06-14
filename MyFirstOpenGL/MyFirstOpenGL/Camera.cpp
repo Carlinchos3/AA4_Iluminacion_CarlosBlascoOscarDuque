@@ -17,8 +17,8 @@ void Camera::Rotate(float _offsetX, float _offsetY) {
     yaw += _offsetX * sensitivity;
     pitch -= _offsetY * sensitivity;
 
-    if (pitch > 89.0f) pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
+    if (pitch > yawLimit) pitch = yawLimit;
+    if (pitch < -yawLimit) pitch = -yawLimit;
 
     UpdateVectors();
 }
