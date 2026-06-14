@@ -134,15 +134,21 @@ void main() {
         // Modelos
         Model trollModel = LoadOBJModel("Assets/Models/troll.obj");
         Model sphereModel = LoadOBJModel("Assets/Models/sphere.obj");
+        Model rockModel = LoadOBJModel("Assets/Models/rock.obj");
+        Model skullModel = LoadOBJModel("Assets/Models/skull.obj");
 
         // Texturas
         Texture trollTexture("Assets/Textures/troll.png");
         Texture sunTexture("Assets/Textures/sun.png");
         Texture moonTexture("Assets/Textures/moon.png");
+        Texture rockTexture("Assets/Textures/rock.png");
+        Texture skullTexture("Assets/Textures/skull.png");
 
         // GameObjects
         GameObject trollLeft(&trollModel, &trollTexture, glm::vec3(-1.5f, 0.0f, -2.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         GameObject trollRight(&trollModel, &trollTexture, glm::vec3(1.5f, 0.0f, -2.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+        GameObject rock(&rockModel, &rockTexture, glm::vec3(-1.f, 0.0f, -0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+        GameObject skull(&skullModel, &skullTexture, glm::vec3(1.5f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.01f));
 
         // Astros
         Satelite sun(&sphereModel, &sunTexture, ORBIT_RADIUS, glm::vec3(0.5f));
@@ -157,6 +163,8 @@ void main() {
         _renderManager.AddObject(&trollLeft);
         _renderManager.AddObject(&trollRight);
         _renderManager.AddObject(&sun);
+        _renderManager.AddObject(&rock);
+        _renderManager.AddObject(&skull);
         _renderManager.AddObject(&moon);
 
         glfwSetFramebufferSizeCallback(window, Resize_Window);
