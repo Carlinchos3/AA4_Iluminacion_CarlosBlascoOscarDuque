@@ -7,7 +7,7 @@ Sky::Sky(Satelite* sun, Satelite* moon, float cycleDuration)
 
 void Sky::Update(float currentTime, GLuint program) 
 {
-    float angle = (currentTime / cycleDuration) * glm::pi<float>();
+    float angle = (currentTime / cycleDuration) * glm::two_pi<float>();
 
     sun->Update(angle);
     moon->Update(angle + glm::pi<float>());
