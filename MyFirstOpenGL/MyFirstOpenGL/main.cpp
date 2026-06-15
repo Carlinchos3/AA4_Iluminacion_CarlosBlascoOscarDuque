@@ -150,7 +150,7 @@ void main() {
         shaderManager.Use();
 
         // Camara e input
-        Camera camera(glm::vec3(0.0f, 1.0f, 5.0f), -90.0f, 0.0f);
+        Camera camera(glm::vec3(0.0f, 3.0f, 8.0f), -90.0f, 0.0f);
         InputManager inputManager(camera);
         glfwSetWindowUserPointer(window, &inputManager);
         glfwSetCursorPosCallback(window, InputManager::MouseCallback);
@@ -164,6 +164,7 @@ void main() {
         Model tercerEdificioModel = LoadOBJModel("Assets/Models/TercerEdificio.obj");
         Model vallaModel = LoadOBJModel("Assets/Models/Valla.obj");
         Model señalModel = LoadOBJModel("Assets/Models/Señal.obj");
+        //Model sueloModel = LoadOBJModel("Assets/Models/Suelo.obj");
 
         // Texturas
         Texture trollTexture("Assets/Textures/troll.png");
@@ -175,6 +176,7 @@ void main() {
         Texture tercerEdificioTexture("Assets/Textures/TercerEdificio.png");
         Texture vallaTexture("Assets/Textures/Valla.png");
         Texture señalTexture("Assets/Textures/señal.png");
+        //Texture sueloTexture("Assets/Textures/Suelo.png");
 
         // Astros
         Satelite sun(&sphereModel, &sunTexture, ORBIT_RADIUS, glm::vec3(0.5f));
@@ -199,6 +201,10 @@ void main() {
 
         GameObject tercerEdificio2(&tercerEdificioModel, &tercerEdificioTexture, glm::vec3(0.0f, 0.0f, -18.0f), glm::vec3(90.0f), glm::vec3(0.08f));
         _renderManager.AddObject(&tercerEdificio2);
+
+        //Suelo comentado ya que no se adapta bien la textura al modelo y queda peor
+        //GameObject suelo(&sueloModel, &sueloTexture, glm::vec3(-3.1f, -0.0f, -15.0f), glm::vec3(0.0f), glm::vec3(0.17f));
+        //_renderManager.AddObject(&suelo);
 
         //Sistema de spawnpoints
         // 6 posiciones distribuidas en la acera de la escena urbana
