@@ -22,13 +22,13 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModelManager.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Satelite.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Sky.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Stb.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
@@ -42,6 +42,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Satelite.h" />
     <ClInclude Include="ShaderManager.h" />

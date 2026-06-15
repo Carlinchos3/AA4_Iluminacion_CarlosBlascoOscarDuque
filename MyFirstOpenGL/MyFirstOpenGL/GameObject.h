@@ -8,6 +8,7 @@
 
 class GameObject {
 public:
+    GameObject() : model(nullptr), texture(nullptr), position(0.0f), rotation(0.0f), scale(1.0f), isLightSource(false) {}
     GameObject(Model* model, Texture* texture, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, bool isLightSource = false);
     void Render(GLuint program) const;
 

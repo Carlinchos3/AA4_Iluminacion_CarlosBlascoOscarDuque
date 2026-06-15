@@ -4,6 +4,7 @@
 
 class Texture {
 public:
+    Texture() : textureID(0) {}
     Texture(const std::string& filePath);
     void Bind() const;
 

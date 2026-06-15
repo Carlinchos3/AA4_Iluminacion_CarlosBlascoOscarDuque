@@ -46,7 +46,6 @@ void InputManager::MouseCallback(GLFWwindow* window, double posX, double posY) {
 
 bool InputManager::IsFlashlightOn() const {
     return flashlightOn;
-    std::cout << IsFlashlightOn() << std::endl;
 }
 
 void InputManager::PassUniforms(GLuint program) const 
