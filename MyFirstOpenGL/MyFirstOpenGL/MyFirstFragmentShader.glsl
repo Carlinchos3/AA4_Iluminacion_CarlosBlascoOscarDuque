@@ -13,7 +13,6 @@ uniform sampler2D textureSampler;
 
 in vec2 uvsFragmentShader;
 in vec3 normalsFragmentShader;
-in vec4 primitivePosition;
 in vec4 worldPosition4FragmentShader;
 
 // Linterna
