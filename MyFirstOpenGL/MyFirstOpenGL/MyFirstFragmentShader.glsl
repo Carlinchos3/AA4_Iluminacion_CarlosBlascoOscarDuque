@@ -1,5 +1,13 @@
 #version 440 core
 
+//Para evitar Magic Numbers
+#define MIN_DIFFUSE       0.15
+#define MOON_INTENSITY         0.3
+#define HORIZON_FADE_MIN      -0.2
+#define HORIZON_FADE_MAX       0.2
+#define FLASHLIGHT_ATTEN_EXP   2.0
+#define FLASHLIGHT_INTENSITY  3.0
+
 uniform vec2 windowSize;
 uniform sampler2D textureSampler;
 
@@ -42,14 +50,14 @@ void main()
 
     // Sol con un fade porque sino mete cortes burscos
     float sunDot = dot(normalsFragmentShader, normalize(sunDir));
-    float sunHorizonFade = smoothstep(-0.2, 0.2, sunDir.y);
-    float sunDiffuse = max(sunDot, 0.15);
+    float sunHorizonFade = smoothstep(HORIZON_FADE_MIN, HORIZON_FADE_MAX, sunDir.y);
+    float sunDiffuse = max(sunDot, MIN_DIFFUSE);
     result += baseColor * sunDiffuse * sunHorizonFade;
 
     // Luna igual que el sol pero menos intensa
     float moonDot = dot(normalsFragmentShader, normalize(-moonDir));
-    float moonHorizonFade = smoothstep(-0.2, 0.2, moonDir.y);
-    float moonDiffuse = max(moonDot, 0.15) * 0.3;
+    float moonHorizonFade = smoothstep(HORIZON_FADE_MIN, HORIZON_FADE_MAX, moonDir.y);
+    float moonDiffuse = max(moonDot, MIN_DIFFUSE) * MOON_INTENSITY;
     result += baseColor * moonDiffuse * moonHorizonFade;
 
     // Linterna
@@ -62,8 +70,8 @@ void main()
             vec3 toFragDir = normalize(toFragment);
             float angle = dot(toFragDir, normalize(flashlightDir));
             float intensity = smoothstep(flashlightOuterCone, flashlightInnerCone, angle);
-            float attenuation = 1.0 - pow(dist / flashlightMaxDist, 2.0);
-            result += baseColor * intensity * attenuation * 3.0;
+            float attenuation = 1.0 - pow(dist / flashlightMaxDist, FLASHLIGHT_ATTEN_EXP);
+            result += baseColor * intensity * attenuation * FLASHLIGHT_INTENSITY;
         }
     }
 
